@@ -12,6 +12,11 @@ module Pattern = struct
   external make : unit -> t = "pattern_make"
   external get : t -> string -> int -> value = "pattern_get"
   external add : t -> property -> bool -> unit = "pattern_add"
+  external addweak : t -> property -> bool -> unit = "pattern_addweak"
+  external del : t -> string -> bool = "pattern_del"
+  external remove : t -> string -> int -> bool = "pattern_remove"
+  external default_substitute : t -> unit = "pattern_default_substitute"
+  external format : t -> string -> string = "pattern_format"
   let from_list plist =
     let pat = make () in
     List.iter (fun prop -> add pat prop true) plist;
@@ -56,6 +61,8 @@ end
 external init : unit -> bool = "init"
 external fini : unit -> unit = "fini"
 external get_version : unit -> int = "get_version"
+external reinitialize : unit -> bool = "reinitialize"
+external bring_up_to_date : unit -> bool = "bring_up_to_date"
 
 (* Force initialization *)
 let _ = init()

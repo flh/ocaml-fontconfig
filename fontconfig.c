@@ -17,12 +17,19 @@ void fcpattern_finalize(value v)
   FcPatternDestroy(FcPattern_val(v));
 }
 
+long fcpattern_hash(value v)
+{
+  long hash = 0;
+  hash += FcPatternHash(FcPattern_val(v));
+  return hash;
+}
+
 static struct custom_operations fcpattern_ops =
 {
     "fr.freedesktop.org.Software.fontconfig.FcPattern",
     &fcpattern_finalize,
     custom_compare_default,
-    custom_hash_default,
+    &fcpattern_hash,
     custom_serialize_default,
     custom_deserialize_default
 };
@@ -141,6 +148,59 @@ CAMLprim value pattern_add(value pat, value prop, value append)
   CAMLreturn(Val_unit);
 }
 
+CAMLprim value pattern_addweak(value pat, value prop, value append)
+{
+  CAMLparam0();
+  FcPatternAddWeak(FcPattern_val(pat),
+      String_val(Field(prop, 0)),
+      fcvalue_from_caml(Field(prop, 1)),
+      Bool_val(append) ? FcTrue : FcFalse);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value pattern_del(value pat, value prop)
+{
+  CAMLparam0();
+  FcBool res = FcPatternDel(FcPattern_val(pat),
+      String_val(prop));
+  CAMLreturn(res == FcTrue ? Val_true : Val_false);
+}
+
+CAMLprim value pattern_remove(value pat, value prop, value pos)
+{
+  CAMLparam0();
+  FcBool res = FcPatternRemove(FcPattern_val(pat),
+      String_val(prop),
+      Int_val(pos));
+  CAMLreturn(res == FcTrue ? Val_true : Val_false);
+}
+
+CAMLprim value default_substitute(value pat)
+{
+  CAMLparam0();
+  FcDefaultSubstitute(FcPattern_val(pat));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value pattern_format(value pat, value format)
+{
+  CAMLparam0();
+  CAMLlocal1(res);
+
+  char *str_res = (char *)FcPatternFormat(FcPattern_val(pat),
+        (FcChar8 *) String_val(format));
+
+  if(str_res == NULL) {
+    caml_invalid_argument("pattern format");
+  }
+  else {
+    res = caml_copy_string(str_res);
+    free(str_res);
+  }
+
+  CAMLreturn(res);
+}
+
 CAMLprim value slant_to_int(value v)
 {
   CAMLparam0();
@@ -213,19 +273,14 @@ CAMLprim value pattern_font_sort(value plist, value trim)
 CAMLprim value init(value unit)
 {
   CAMLparam1(unit);
-  if(FcInit() == FcTrue) {
-    CAMLreturn(Val_true);
-  }
-  else {
-    CAMLreturn(Val_false);
-  }
+  CAMLreturn(FcInit() == FcTrue ? Val_true : Val_false);
 }
 
 CAMLprim value fini(value unit)
 {
   CAMLparam1(unit);
   FcFini();
-  CAMLreturn(unit);
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value get_version(value unit)
@@ -233,3 +288,16 @@ CAMLprim value get_version(value unit)
   CAMLparam1(unit);
   CAMLreturn(Val_int(FcGetVersion()));
 }
+
+CAMLprim value reinitialize(value unit)
+{
+  CAMLparam1(unit);
+  CAMLreturn(FcInitReinitialize() == FcTrue ? Val_true : Val_false);
+}
+
+CAMLprim value bring_op_to_date(value unit)
+{
+  CAMLparam1(unit);
+  CAMLreturn(FcInitBringUptoDate() == FcTrue ? Val_true : Val_false);
+}
+
