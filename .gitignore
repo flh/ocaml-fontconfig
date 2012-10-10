@@ -1,0 +1,9 @@
+*.so
+*.cma
+*.cmi
+*.cmo
+*.o
+*.a
+types.h
+fontconfig.ml
+fontconfig.mli
