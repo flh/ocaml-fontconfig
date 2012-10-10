@@ -164,18 +164,18 @@ CAMLprim value pattern_find_font(value plist)
   CAMLparam0();
   CAMLlocal1(res);
   FcPattern *pat, *match;
-  FcResult result;
+  FcResult result = FcResultMatch;
 
   pat = FcPattern_val(plist);
   FcConfigSubstitute(NULL, pat, FcMatchPattern);
   FcDefaultSubstitute(pat); 
   match = FcFontMatch(NULL, pat, &result);
 
-  if(result == FcResultNoMatch) {
-    caml_raise_constant(*caml_named_value("not_found exception"));
+  if(result == FcResultMatch) {
+    res = caml_box_fcpattern(match);
   }
   else {
-    res = caml_box_fcpattern(match);
+    caml_raise_constant(*caml_named_value("not_found exception"));
   }
 
   CAMLreturn(res);
