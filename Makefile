@@ -2,7 +2,9 @@ OCAML=ocaml
 OCAMLC=ocamlc
 OCAMLMKLIB=ocamlmklib
 
-.PHONY: clean
+.PHONY: clean all test
+
+all: fontconfig.cma
 
 fontconfig.cma: fontconfig.cmo fontconfig.o
 	$(OCAMLMKLIB) -o fontconfig fontconfig.cmo fontconfig.o `pkg-config --libs fontconfig`
@@ -18,6 +20,9 @@ fontconfig.mli: fontconfig.ml
 types.h fontconfig.ml: extract_consts.ml
 	$(OCAML) str.cma extract_consts.ml
 fontconfig.ml: fontconfig.ml.in
+
+test:
+	$(OCAML) fontconfig.cma test.ml
 
 clean:
 	rm -f fontconfig.mli fontconfig.cmi fontconfig.cmo fontconfig.o fontconfig.a \
