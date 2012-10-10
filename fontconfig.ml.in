@@ -1,0 +1,62 @@
+type value =
+  | Void
+  | Integer of int
+  | Double of float
+  | String of string
+  | Bool of bool
+
+type property = string * value
+
+module Pattern = struct
+  type t
+  external make : unit -> t = "pattern_make"
+  external get : t -> string -> int -> value = "pattern_get"
+  external add : t -> property -> bool -> unit = "pattern_add"
+  let from_list plist =
+    let pat = make () in
+    List.iter (fun prop -> add pat prop true) plist;
+    pat
+  external find_font : t -> t = "pattern_find_font"
+  external font_sort : t -> bool -> t list = "pattern_font_sort"
+end
+
+module Properties = struct
+  (**SLANT*)
+  external slant_to_int : slant -> int = "slant_to_int"
+  (**WEIGHT*)
+  external weight_to_int : weight -> int = "weight_to_int"
+  (**WIDTH*)
+  external width_to_int : width -> int = "width_to_int"
+
+  type t =
+    | Family of string
+    | Style of string
+    | Slant of slant
+    | Weight of weight
+    | Size of float
+    | Width of width
+    | Aspect of float
+    | Other of string * value
+
+  let to_value : t -> property = function
+    | Family s -> ("family", String s)
+    | Style s -> ("style", String s)
+    | Slant s -> ("slant", Integer (slant_to_int s))
+    | Weight w -> ("weight", Integer (weight_to_int w))
+    | Size s -> ("size", Double s)
+    | Width w -> ("width", Integer (width_to_int w))
+    | Aspect a -> ("aspect", Double a)
+    | Other(s, v) -> (s, v)
+
+  let make l = Pattern.from_list (List.map to_value l)
+end
+  
+(* Initialization *)
+
+external init : unit -> bool = "init"
+external fini : unit -> unit = "fini"
+external get_version : unit -> int = "get_version"
+
+(* Force initialization *)
+let _ = init()
+let _ = Callback.register_exception "not_found exception" Not_found
