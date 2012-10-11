@@ -8,6 +8,10 @@
 
 #include "fccaml.h"
 
+/* Matrix conversions from/to Caml, defined in matrix.c */
+FcMatrix *fcmatrix_from_caml(value m);
+value caml_from_fcmatrix(const FcMatrix *m);
+
 /* Constant arrays defined in types.c */
 extern const int fcSlant[];
 extern const int fcWidth[];
@@ -63,12 +67,7 @@ FcValue fcvalue_from_caml(value c)
         break;
       case 4: /* Matrix */
         res.type = FcTypeMatrix;
-        res.u.m = malloc(sizeof(FcMatrix));
-        /* We know that we do want to write in res.u.m */
-        ((FcMatrix *)res.u.m)->xx = Double_field(Field(c, 0), 0);
-        ((FcMatrix *)res.u.m)->xy = Double_field(Field(c, 0), 1);
-        ((FcMatrix *)res.u.m)->yx = Double_field(Field(c, 0), 2);
-        ((FcMatrix *)res.u.m)->yy = Double_field(Field(c, 0), 3);
+        res.u.m = fcmatrix_from_caml(Field(c, 0));
         break;
     }
   }
@@ -104,13 +103,7 @@ value caml_from_fcvalue(FcValue v)
       Store_field(res, 0, v.u.b ? Val_true : Val_false);
       break;
     case FcTypeMatrix:
-      res = caml_alloc(1, 4);
-      arr = caml_alloc(4 * Double_wosize, Double_array_tag);
-      Store_field(res, 1, arr);
-      Store_double_field(arr, 0, v.u.m->xx);
-      Store_double_field(arr, 1, v.u.m->xy);
-      Store_double_field(arr, 2, v.u.m->yx);
-      Store_double_field(arr, 3, v.u.m->yy);
+      res = caml_from_fcmatrix(v.u.m);
   }
   CAMLreturn(res);
 }

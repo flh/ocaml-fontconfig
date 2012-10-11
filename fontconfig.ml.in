@@ -22,6 +22,12 @@ end
 
 module Matrix = struct
   type t = { xx : float; xy : float; yx : float; yy : float }
+
+  let identity = { xx = 1. ; xy = 0. ; yx = 0.; yy = 1. }
+  external multiply : t -> t -> t = "matrix_multiply"
+  external rotate : t -> float -> float -> t = "matrix_rotate"
+  external scale : t -> float -> float -> t = "matrix_scale"
+  external shear : t -> float -> float -> t = "matrix_shear"
 end
 
 type value =
