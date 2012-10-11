@@ -1,8 +1,13 @@
 OCAML=ocaml
 OCAMLC=ocamlc
 OCAMLMKLIB=ocamlmklib
-C_SOURCES=types.c $(wildcard *.c)
+C_SOURCES=$(filter-out types.c, $(wildcard *.c)) types.c
 C_OBJECTS=$(C_SOURCES:.c=.o)
+
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+  CFLAGS          += -fPIC
+endif
 
 .PHONY: clean all test
 
@@ -12,7 +17,7 @@ fontconfig.cma: fontconfig.cmo $(C_OBJECTS)
 	$(OCAMLMKLIB) -o fontconfig fontconfig.cmo $(C_OBJECTS) `pkg-config --libs fontconfig`
 
 %.o: %.c types.h
-	$(OCAMLC) -c $<
+	$(OCAMLC) $(CFLAGS) -c $<
 fontconfig.cmi: fontconfig.mli
 	$(OCAMLC) -c $<
 fontconfig.cmo: fontconfig.ml fontconfig.cmi
