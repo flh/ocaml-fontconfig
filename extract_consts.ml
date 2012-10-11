@@ -1,6 +1,6 @@
 open Str
 
-let show_me consts qui out_h out_ml =
+let show_me consts qui out_c out_ml =
   let lqui = String.lowercase qui in
   let lcqui = String.capitalize lqui in
   let l = List.rev (Hashtbl.find consts qui) in
@@ -8,9 +8,9 @@ let show_me consts qui out_h out_ml =
   List.iter (fun (a, _, _) -> Printf.fprintf out_ml "  | %s\n" (String.capitalize
   (String.lowercase a))) l;
   Printf.fprintf out_ml "\n";
-  Printf.fprintf out_h "const int fc%s[] = {" lcqui;
-  List.iter (fun (_, _, c) -> Printf.fprintf out_h "%s, " c) l;
-  Printf.fprintf out_h "};\n"
+  Printf.fprintf out_c "const int fc%s[] = {" lcqui;
+  List.iter (fun (_, _, c) -> Printf.fprintf out_c "%s, " c) l;
+  Printf.fprintf out_c "};\n"
 
 let read_fontconfig_h () =
   let consts = Hashtbl.create 10
@@ -34,9 +34,12 @@ let _ =
   let consts = read_fontconfig_h ()
   and in_ml = open_in "fontconfig.ml.in"
   and lineno = ref 0
-  and out_h = open_out "types.h"
+  and out_c = open_out "types.c"
   and subst_regexp = regexp "^[ \t]*(\\*\\*\\([A-Z]*\\)\\*)$"
   and out_ml = open_out "fontconfig.ml" in
+  (* types.c header *)
+  Printf.fprintf out_c "#include <fontconfig/fontconfig.h>\n";
+  (* fontconfig.ml initial line number *)
   Printf.fprintf out_ml "#1 \"fontconfig.ml.in\"\n";
   (try
     while true do
@@ -44,9 +47,9 @@ let _ =
       incr lineno;
       if string_match subst_regexp line 0 then
         let qui = matched_group 1 line in
-        (show_me consts qui out_h out_ml;
+        (show_me consts qui out_c out_ml;
         Printf.fprintf out_ml "#%d \"%s\"\n" (!lineno + 1) "fontconfig.ml.in")
       else
         Printf.fprintf out_ml "%s\n" line
     done
-  with End_of_file -> ())
+  with End_of_file -> ());

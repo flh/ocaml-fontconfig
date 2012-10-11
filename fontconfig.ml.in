@@ -1,9 +1,21 @@
+module Lang = struct
+  type t
+  type langcmp = Equal | DifferentTerritory | DifferentLang
+  external make : string list -> t = "lang_make"
+  external compare : t -> t -> langcmp = "langset_compare"
+  external all_langs : unit -> string list = "lang_get_all"
+end
+
+type matrix = { xx : float; xy : float; yx : float; yy : float }
+
 type value =
   | Void
   | Integer of int
   | Double of float
   | String of string
   | Bool of bool
+  | Matrix of matrix
+  | LangSet of Lang.t
 
 type property = string * value
 
@@ -14,6 +26,7 @@ module Pattern = struct
   external add : t -> property -> bool -> unit = "pattern_add"
   external addweak : t -> property -> bool -> unit = "pattern_addweak"
   external del : t -> string -> bool = "pattern_del"
+  external copy : t -> t = "pattern_copy"
   external remove : t -> string -> int -> bool = "pattern_remove"
   external default_substitute : t -> unit = "pattern_default_substitute"
   external format : t -> string -> string = "pattern_format"
