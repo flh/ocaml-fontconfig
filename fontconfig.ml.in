@@ -1,12 +1,28 @@
-module Lang = struct
+module LangSet = struct
   type t
   type langcmp = Equal | DifferentTerritory | DifferentLang
-  external make : string list -> t = "lang_make"
+  external make : unit -> t = "langset_make"
+  external copy : t -> t = "langset_copy"
+  external add : t -> string -> bool = "langset_add"
+  external del : t -> string -> bool = "langset_del"
+  external union : t -> t -> t = "langset_union"
+  external subtract : t -> t -> t = "langset_subtract"
   external compare : t -> t -> langcmp = "langset_compare"
-  external all_langs : unit -> string list = "lang_get_all"
+  external contains : t -> t -> bool = "langset_contains"
+  external equal : t -> t -> bool = "langset_equal"
+  external has_lang : t -> string -> bool = "langset_haslang"
+  external default_langs : unit -> string list = "langset_defaultlangs"
+  external all_langs : unit -> string list = "langset_get_all"
+
+  let from_list langs =
+    let langset = make () in
+    List.iter (fun lang -> ignore (add langset lang)) langs;
+    langset
 end
 
-type matrix = { xx : float; xy : float; yx : float; yy : float }
+module Matrix = struct
+  type t = { xx : float; xy : float; yx : float; yy : float }
+end
 
 type value =
   | Void
@@ -14,8 +30,8 @@ type value =
   | Double of float
   | String of string
   | Bool of bool
-  | Matrix of matrix
-  | LangSet of Lang.t
+  | Matrix of Matrix.t
+  | LangSet of LangSet.t
 
 type property = string * value
 

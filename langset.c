@@ -6,6 +6,8 @@
 #include <caml/fail.h>
 #include <fontconfig/fontconfig.h>
 
+#include "fccaml.h"
+
 /* LangSets */
 
 /* Custom type for OCaml, boxing the FcLangSet struct */
@@ -34,41 +36,51 @@ static struct custom_operations fclangset_ops =
     custom_deserialize_default
 };
 
-CAMLprim value langset_make(value unit)
+value caml_make_langset(FcLangSet *ls)
 {
   CAMLparam0();
   CAMLlocal1(res);
-  FcLangSet *fs;
 
-  fs = FcLangSetCreate();
   res = caml_alloc_custom(&fclangset_ops, sizeof(FcLangSet *), 0, 1);
-  FcLangSet_val(res) = fs;
+  FcLangSet_val(res) = ls;
+
   CAMLreturn(res);
 }
 
-CAMLprim value lang_get_all(value unit)
+CAMLprim value langset_make(value unit)
 {
   CAMLparam0();
-  CAMLlocal2(la, nla);
-  FcStrList *it;
-  FcStrSet *set;
-  FcChar8 *lang;
+  CAMLreturn(caml_make_langset(FcLangSetCreate()));
+}
 
-  set = FcGetLangs();
-  it = FcStrListCreate(set);
+CAMLprim value langset_copy(value ls)
+{
+  CAMLparam0();
+  CAMLreturn(caml_make_langset(FcLangSetCopy(FcLangSet_val(ls))));
+}
 
-  la = Val_int(0); /* nil */
-  while((lang = FcStrListNext(it))) {
-    nla = caml_alloc(2, 0);
-    Store_field(nla, 1, la);
-    Store_field(nla, 0, caml_copy_string((char *)lang));
-    la = nla;
-  }
+CAMLprim value langset_add(value ls, value lang)
+{
+  CAMLparam0();
+  CAMLreturn(CamlFcBool(FcLangSetAdd(FcLangSet_val(ls), (FcChar8 *)String_val(lang))));
+}
 
-  FcStrListDone(it);
-  FcStrSetDestroy(set);
+CAMLprim value langset_del(value ls, value lang)
+{
+  CAMLparam0();
+  CAMLreturn(CamlFcBool(FcLangSetDel(FcLangSet_val(ls), (FcChar8 *)String_val(lang))));
+}
 
-  CAMLreturn(la);
+CAMLprim value langset_union(value lsa, value lsb)
+{
+  CAMLparam0();
+  CAMLreturn(caml_make_langset(FcLangSetUnion(FcLangSet_val(lsa), FcLangSet_val(lsb))));
+}
+
+CAMLprim value langset_subtract(value lsa, value lsb)
+{
+  CAMLparam0();
+  CAMLreturn(caml_make_langset(FcLangSetSubtract(FcLangSet_val(lsa), FcLangSet_val(lsb))));
 }
 
 CAMLprim value langset_compare(value la, value lb)
@@ -90,4 +102,67 @@ CAMLprim value langset_compare(value la, value lb)
   }
 
   CAMLreturn(res);
+}
+
+CAMLprim value langset_contains(value lsa, value lsb)
+{
+  CAMLparam0();
+  CAMLreturn(CamlFcBool(FcLangSetContains(FcLangSet_val(lsa), FcLangSet_val(lsb))));
+}
+
+CAMLprim value langset_equal(value lsa, value lsb)
+{
+  CAMLparam0();
+  CAMLreturn(CamlFcBool(FcLangSetEqual(FcLangSet_val(lsa), FcLangSet_val(lsb))));
+}
+
+CAMLprim value langset_haslang(value ls, value lang)
+{
+  CAMLparam0();
+  CAMLreturn(CamlFcBool(FcLangSetHasLang(FcLangSet_val(ls), String_val(lang))));
+}
+
+CAMLprim value fcstrset_to_caml(FcStrSet *set)
+{
+  CAMLparam0();
+  CAMLlocal2(res, nres);
+  FcStrList *iter = FcStrListCreate(set);
+  char *str;
+
+  res = Val_int(0); /* nil */
+
+  while((str = FcStrListNext(iter))) {
+    nres = caml_alloc(2, 0);
+    Store_field(nres, 0, caml_copy_string(str));
+    Store_field(nres, 1, res);
+    res = nres;
+  }
+
+  FcStrListDone(iter);
+
+  CAMLreturn(res);
+}
+
+CAMLprim value langset_defaultlangs(value unit)
+{
+  CAMLparam0();
+  CAMLlocal1(res);
+#if FC_VERSION >= 21000
+  FcStrSet *langs = FcGetDefaultLangs();
+  res = fcstrset_to_caml(langs);
+  FcStrSetDestroy(langs);
+#else
+  res = Val_int(0); /* nil */
+#endif
+  CAMLreturn(res);
+}
+
+CAMLprim value langset_get_all(value unit)
+{
+  CAMLparam0();
+  CAMLlocal1(la);
+  FcStrSet *set = FcGetLangs();
+  la = fcstrset_to_caml(set);
+  FcStrSetDestroy(set);
+  CAMLreturn(la);
 }
