@@ -6,10 +6,10 @@ C_OBJECTS=$(C_SOURCES:.c=.o)
 
 LBITS := $(shell getconf LONG_BIT)
 ifeq ($(LBITS),64)
-  CFLAGS          += -fPIC
+  CFLAGS += -fPIC
 endif
 
-.PHONY: clean all test
+.PHONY: clean all test install
 
 all: fontconfig.cma
 

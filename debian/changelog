@@ -1,0 +1,5 @@
+ocaml-fontconfig (0~20121011) unstable; urgency=low
+
+  * Initial OCaml bindings for Fontconfig
+
+ -- Florian Hatat <florian.hatat@univ-savoie.fr>  Thu, 11 Oct 2012 15:57:28 +0200

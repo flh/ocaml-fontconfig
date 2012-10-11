@@ -1,0 +1,13 @@
+Source: ocaml-fontconfig
+Section: ocaml
+Priority: extra
+Maintainer: Florian Hatat <florian.hatat@univ-savoie.fr>
+Build-Depends: debhelper (>= 7.0.50~), dh-ocaml, ocaml-base-nox, libfontconfig1-dev
+Standards-Version: 3.9.3
+Homepage: http://www.lama.univ-savoie.fr/~hatat/fontconfig
+
+Package: libfontconfig-ocaml
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${F:OCamlRun}, fontconfig
+Description: OCaml bindings for Fontconfig

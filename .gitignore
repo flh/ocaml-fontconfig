@@ -7,3 +7,7 @@
 fontconfig.ml
 fontconfig.mli
 types.c
+debian/files
+debian/tmp
+debian/libfontconfig-ocaml*
+debian/libfontconfig-ocaml-dev*
