@@ -10,31 +10,31 @@
 
 CAMLprim value init(value unit)
 {
-  CAMLparam1(unit);
+  CAMLparam0();
   CAMLreturn(CamlFcBool(FcInit()));
 }
 
 CAMLprim value fini(value unit)
 {
-  CAMLparam1(unit);
+  CAMLparam0();
   FcFini();
   CAMLreturn(Val_unit);
 }
 
 CAMLprim value get_version(value unit)
 {
-  CAMLparam1(unit);
+  CAMLparam0();
   CAMLreturn(Val_int(FcGetVersion()));
 }
 
 CAMLprim value reinitialize(value unit)
 {
-  CAMLparam1(unit);
+  CAMLparam0();
   CAMLreturn(CamlFcBool(FcInitReinitialize()));
 }
 
 CAMLprim value bring_up_to_date(value unit)
 {
-  CAMLparam1(unit);
+  CAMLparam0();
   CAMLreturn(CamlFcBool(FcInitBringUptoDate()));
 }
