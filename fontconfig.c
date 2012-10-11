@@ -6,10 +6,12 @@
 #include <caml/fail.h>
 #include <fontconfig/fontconfig.h>
 
+#include "fccaml.h"
+
 CAMLprim value init(value unit)
 {
   CAMLparam1(unit);
-  CAMLreturn(FcInit() == FcTrue ? Val_true : Val_false);
+  CAMLreturn(CamlFcBool(FcInit()));
 }
 
 CAMLprim value fini(value unit)
@@ -28,11 +30,11 @@ CAMLprim value get_version(value unit)
 CAMLprim value reinitialize(value unit)
 {
   CAMLparam1(unit);
-  CAMLreturn(FcInitReinitialize() == FcTrue ? Val_true : Val_false);
+  CAMLreturn(CamlFcBool(FcInitReinitialize()));
 }
 
 CAMLprim value bring_up_to_date(value unit)
 {
   CAMLparam1(unit);
-  CAMLreturn(FcInitBringUptoDate() == FcTrue ? Val_true : Val_false);
+  CAMLreturn(CamlFcBool(FcInitBringUptoDate()));
 }

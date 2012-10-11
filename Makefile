@@ -11,7 +11,7 @@ all: fontconfig.cma
 fontconfig.cma: fontconfig.cmo $(C_OBJECTS)
 	$(OCAMLMKLIB) -o fontconfig fontconfig.cmo $(C_OBJECTS) `pkg-config --libs fontconfig`
 
-%.o: %.c
+%.o: %.c types.h
 	$(OCAMLC) -c $<
 fontconfig.cmi: fontconfig.mli
 	$(OCAMLC) -c $<

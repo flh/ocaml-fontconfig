@@ -6,6 +6,8 @@
 #include <caml/fail.h>
 #include <fontconfig/fontconfig.h>
 
+#include "fccaml.h"
+
 /* Constant arrays defined in types.c */
 extern const int fcSlant[];
 extern const int fcWidth[];
@@ -182,7 +184,7 @@ CAMLprim value pattern_del(value pat, value prop)
   CAMLparam0();
   FcBool res = FcPatternDel(FcPattern_val(pat),
       String_val(prop));
-  CAMLreturn(res == FcTrue ? Val_true : Val_false);
+  CAMLreturn(CamlFcBool(res));
 }
 
 CAMLprim value pattern_copy(value pat)
@@ -197,7 +199,7 @@ CAMLprim value pattern_remove(value pat, value prop, value pos)
   FcBool res = FcPatternRemove(FcPattern_val(pat),
       String_val(prop),
       Int_val(pos));
-  CAMLreturn(res == FcTrue ? Val_true : Val_false);
+  CAMLreturn(CamlFcBool(res));
 }
 
 CAMLprim value default_substitute(value pat)

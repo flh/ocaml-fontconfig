@@ -4,6 +4,6 @@
 *.cmo
 *.o
 *.a
-types.h
 fontconfig.ml
 fontconfig.mli
+types.c
