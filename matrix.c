@@ -23,15 +23,13 @@ CAMLprim FcMatrix *fcmatrix_from_caml(value m)
 CAMLprim value caml_from_fcmatrix(const FcMatrix *m)
 {
   CAMLparam0();
-  CAMLlocal2(res, arr);
-  res = caml_alloc(1, 4);
+  CAMLlocal1(arr);
   arr = caml_alloc(4 * Double_wosize, Double_array_tag);
-  Store_field(res, 1, arr);
   Store_double_field(arr, 0, m->xx);
   Store_double_field(arr, 1, m->xy);
   Store_double_field(arr, 2, m->yx);
   Store_double_field(arr, 3, m->yy);
-  CAMLreturn(res);
+  CAMLreturn(arr);
 }
 
 CAMLprim value matrix_multiply(value m1, value m2)
