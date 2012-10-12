@@ -18,15 +18,18 @@ endif
 
 .PHONY: clean all byte opt install install-common install-byte install-opt
 
-all: byte $(OPT_FLAG)
+all: byte $(OPT_FLAG) dllfontconfig.so
 byte: fontconfig.cma META
 opt:  fontconfig.cmxa META
 
-fontconfig.cma: fontconfig.cmo $(C_OBJECTS)
-	$(OCAMLMKLIB) -o fontconfig $< $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+dllfontconfig.so: $(C_OBJECTS)
+	$(OCAMLMKLIB) -o fontconfig $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
 
-fontconfig.cmxa: fontconfig.cmx $(C_OBJECTS)
-	$(OCAMLMKLIB) -o fontconfig $< $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+fontconfig.cma: fontconfig.cmo
+	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+
+fontconfig.cmxa: fontconfig.cmx
+	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
 
 %.o: %.c
 	$(OCAMLC) -c $<
