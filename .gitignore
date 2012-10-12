@@ -4,9 +4,12 @@
 *.cmo
 *.o
 *.a
+*.cmx
+*.cmxa
 fontconfig.ml
 fontconfig.mli
 types.c
+META
 debian/files
 debian/tmp
 debian/libfontconfig-ocaml*
