@@ -12,7 +12,6 @@
 
 CAMLprim FcMatrix *fcmatrix_from_caml(value m)
 {
-  CAMLparam0();
   FcMatrix *res = malloc(sizeof(*res));
   res->xx = Double_field(m, 0);
   res->xy = Double_field(m, 1);

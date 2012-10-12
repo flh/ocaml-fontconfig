@@ -119,7 +119,7 @@ CAMLprim value langset_equal(value lsa, value lsb)
 CAMLprim value langset_haslang(value ls, value lang)
 {
   CAMLparam0();
-  CAMLreturn(CamlFcBool(FcLangSetHasLang(FcLangSet_val(ls), String_val(lang))));
+  CAMLreturn(CamlFcBool(FcLangSetHasLang(FcLangSet_val(ls), (FcChar8 *)String_val(lang))));
 }
 
 CAMLprim value fcstrset_to_caml(FcStrSet *set)
@@ -131,7 +131,7 @@ CAMLprim value fcstrset_to_caml(FcStrSet *set)
 
   res = Val_int(0); /* nil */
 
-  while((str = FcStrListNext(iter))) {
+  while((str = (char *)FcStrListNext(iter))) {
     nres = caml_alloc(2, 0);
     Store_field(nres, 0, caml_copy_string(str));
     Store_field(nres, 1, res);
