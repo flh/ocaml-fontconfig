@@ -1,3 +1,9 @@
+ocaml-fontconfig (0~20121012) unstable; urgency=low
+
+  * Fix lintian errors
+
+ -- Florian Hatat <florian.hatat@univ-savoie.fr>  Sat, 13 Oct 2012 16:25:41 +0200
+
 ocaml-fontconfig (0~20121011) unstable; urgency=low
 
   * Initial OCaml bindings for Fontconfig

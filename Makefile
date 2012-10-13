@@ -23,13 +23,13 @@ byte: fontconfig.cma META
 opt:  fontconfig.cmxa META
 
 dllfontconfig.so: $(C_OBJECTS)
-	$(OCAMLMKLIB) -o fontconfig $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+	$(OCAMLMKLIB) -o fontconfig $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
 fontconfig.cma: fontconfig.cmo
-	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
 fontconfig.cmxa: fontconfig.cmx
-	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt,$(LDFLAGS))
+	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
 %.o: %.c
 	$(OCAMLC) -c $<
