@@ -12,3 +12,4 @@ test [Family ("Asana Matssh")];;
 test [Family ("Asana Math")];;
 test [Family ("Alegreya"); Slant Italic];;
 test [Family ("Alegreya"); Slant Italic; Weight Bold];;
+test [Family ("Neo Euler")];;
