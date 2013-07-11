@@ -58,6 +58,11 @@ module Pattern = struct
     pat
   external find_font : t -> t = "pattern_find_font"
   external font_sort : t -> bool -> t list = "pattern_font_sort"
+
+  let get_string pat field o =
+    match get pat field o with
+    | String s -> s
+    | _ -> invalid_arg "get_string"
 end
 
 module Properties = struct
