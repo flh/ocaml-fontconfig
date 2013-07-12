@@ -1,5 +1,5 @@
 OCAML=ocaml
-OCAMLC=ocamlc -g
+OCAMLC=ocamlc
 OCAMLOPT=ocamlopt
 OCAMLMKLIB=ocamlmklib
 
