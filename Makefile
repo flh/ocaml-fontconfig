@@ -13,23 +13,23 @@ C_OBJECTS=$(C_SOURCES:.c=.o)
 
 OCAML_HAVE_OCAMLOPT ?= $(if $(wildcard /usr/bin/ocamlopt),yes,no)
 ifeq ($(OCAML_HAVE_OCAMLOPT),yes)
-  OPT_FLAG=opt
+all: camlfontconfig.cmxa
+install: all install-common install-opt
+META_SOURCE=META.opt
+else
+all: camlfontconfig.cma
+install: all install-common install-byte
+META_SOURCE=META.byte
 endif
 
 .PHONY: clean all byte opt install install-common install-byte install-opt
 
-all: byte $(OPT_FLAG) dllfontconfig.so
-byte: fontconfig.cma META
-opt:  fontconfig.cmxa META
+camlfontconfig.cma: fontconfig.cmo META $(C_OBJECTS)
+	$(OCAMLMKLIB) -o camlfontconfig $(C_OBJECTS) fontconfig.cmo `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
-dllfontconfig.so: $(C_OBJECTS)
-	$(OCAMLMKLIB) -o fontconfig $(C_OBJECTS) `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
+camlfontconfig.cmxa: fontconfig.cmx fontconfig.cmo META $(C_OBJECTS)
+	$(OCAMLMKLIB) -o camlfontconfig $(C_OBJECTS) fontconfig.cmx fontconfig.cmo `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
-fontconfig.cma: fontconfig.cmo
-	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
-
-fontconfig.cmxa: fontconfig.cmx
-	$(OCAMLMKLIB) -o fontconfig $< `pkg-config --libs fontconfig` $(addprefix -ldopt ,$(LDFLAGS))
 
 %.o: %.c
 	$(OCAMLC) -c $<
@@ -47,36 +47,36 @@ fontconfig.cmx: fontconfig.ml fontconfig.cmi
 fontconfig.cmo: fontconfig.ml fontconfig.cmi
 	$(OCAMLC) -c $<
 
-ifeq ($(OPT_FLAG),opt)
-  META_SOURCE=META.opt
-else
-  META_SOURCE=META.byte
-endif
 META: $(META_SOURCE)
 	cp $< $@
 
 clean:
 	rm -f fontconfig.mli fontconfig.cmi \
-	  fontconfig.cmo fontconfig.cma \
-	  fontconfig.cmx fontconfig.cmxa \
-	  fontconfig.a META \
-	  libfontconfig.a fontconfig.cma dllfontconfig.so \
+	  fontconfig.cmo camlfontconfig.cma \
+	  fontconfig.cmx camlfontconfig.cmxa \
+	  camlfontconfig.a fontconfig.o META \
+	  libcamlfontconfig.a dllcamlfontconfig.so \
 	  types.c fontconfig.ml \
-	  $(C_OBJECTS)
-
-install: all install-byte $(addprefix install-,$(OPT_FLAG))
+	  $(C_OBJECTS) \
+	  test.cmi test.cmo test.cmx test.byte test.native test.o
 
 install-common:
 	install -m 755 -d $(DEST_LIB_DIR)
 	install -m 755 -d $(DEST_DLL_DIR)
 	install -m 644 fontconfig.cmi $(DEST_LIB_DIR)
-	install -m 644 libfontconfig.a $(DEST_LIB_DIR)
-	install -m 644 fontconfig.a $(DEST_LIB_DIR)
-	install -m 644 dllfontconfig.so $(DEST_DLL_DIR)
+	install -m 644 libcamlfontconfig.a $(DEST_LIB_DIR)
+	install -m 644 camlfontconfig.a $(DEST_LIB_DIR)
+	install -m 644 dllcamlfontconfig.so $(DEST_DLL_DIR)
 	install -m 644 META $(DEST_LIB_DIR)
 
-install-byte: install-common byte
-	install -m 644 fontconfig.cma $(DEST_LIB_DIR)
+install-byte:
+	install -m 644 camlfontconfig.cma $(DEST_LIB_DIR)
 
-install-opt: install-common opt
-	install -m 644 fontconfig.cmxa $(DEST_LIB_DIR)
+install-opt:
+	install -m 644 camlfontconfig.cmxa $(DEST_LIB_DIR)
+
+test.byte: test.ml
+	ocamlc -o $@ -I . camlfontconfig.cma $<
+
+test.native: test.ml
+	ocamlopt -o $@ -I . camlfontconfig.cmxa $<
