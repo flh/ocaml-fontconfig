@@ -1,3 +1,15 @@
+ocaml-fontconfig (0~20130715) unstable; urgency=low
+
+  * Always build bytecode, even if native is available
+
+ -- Florian Hatat <florian.hatat@univ-savoie.fr>  Tue, 06 Aug 2013 08:53:58 +0200
+
+ocaml-fontconfig (0~20130714) unstable; urgency=low
+
+  * Add get_string function on patterns
+
+ -- Florian Hatat <florian.hatat@univ-savoie.fr>  Mon, 15 Jul 2013 15:07:00 +0200
+
 ocaml-fontconfig (0~20121012) unstable; urgency=low
 
   * Fix lintian errors

@@ -1,25 +1,28 @@
-OCAML=ocaml
-OCAMLC=ocamlc
-OCAMLOPT=ocamlopt
-OCAMLMKLIB=ocamlmklib
+OCAML := ocaml
+OCAMLC := ocamlc
+OCAMLOPT := ocamlopt
+OCAMLMKLIB := ocamlmklib
 
-OCAML_STDLIB_DIR=$(shell ocamlc -where)
+OCAML_STDLIB_DIR := $(shell ocamlc -where)
 OCAML_DLL_DIR ?= $(OCAML_STDLIB_DIR)/stublibs
 DEST_LIB_DIR=$(DESTDIR)/$(OCAML_STDLIB_DIR)/fontconfig
 DEST_DLL_DIR=$(DESTDIR)/$(OCAML_DLL_DIR)
 
-C_SOURCES=$(filter-out types.c, $(wildcard *.c)) types.c
-C_OBJECTS=$(C_SOURCES:.c=.o)
+C_SOURCES := $(filter-out types.c, $(wildcard *.c)) types.c
+C_OBJECTS := $(C_SOURCES:.c=.o)
 
+# Always build bytecode
+all: camlfontconfig.cma
+install: all install-common install-byte
+
+# Sometimes build native binaries
 OCAML_HAVE_OCAMLOPT ?= $(if $(wildcard /usr/bin/ocamlopt),yes,no)
 ifeq ($(OCAML_HAVE_OCAMLOPT),yes)
 all: camlfontconfig.cmxa
-install: all install-common install-opt
-META_SOURCE=META.opt
+install: install-opt
+META_SOURCE := META.opt
 else
-all: camlfontconfig.cma
-install: all install-common install-byte
-META_SOURCE=META.byte
+META_SOURCE := META.byte
 endif
 
 .PHONY: clean all byte opt install install-common install-byte install-opt
