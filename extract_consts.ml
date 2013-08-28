@@ -13,9 +13,35 @@ let show_me consts qui out_c out_ml =
   Printf.fprintf out_c "};\n"
 
 let read_fontconfig_h () =
+
+  let dirs=
+    let cmd="pkg-config --cflags-only-I fontconfig" in
+    try
+      let p = Unix.open_process_in cmd in
+      let res = input_line p in
+
+      let rec split i sp=
+        if i>=String.length res then List.rev sp else
+          let j=try String.index_from res i ' ' with _->String.length res in
+          split (j+1) (String.sub res (i+2) (j-i-2) :: sp)
+      in
+
+      if Unix.close_process_in p = Unix.WEXITED(0) then split 0 []
+      else failwith (cmd^" failed")
+    with
+      | _ -> []
+  in
+
+  let rec find_file s paths=match paths with
+      []->failwith (Printf.sprintf "file %S not found\n" s)
+    | h::t->(
+      let f=Filename.concat h s in
+      if Sys.file_exists f then f else find_file s t
+    )
+  in
   let consts = Hashtbl.create 10
   and const_regexp = regexp "^#define\\b.*\\(FC_\\([^_]*\\)_\\([^ \t]*\\)\\)[ \t]+\\(.+\\)$"
-  and file = open_in "/usr/include/fontconfig/fontconfig.h" in
+  and file = open_in (find_file "fontconfig/fontconfig.h" dirs) in
     (try
       while true do
         let line = input_line file in

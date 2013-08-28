@@ -41,7 +41,7 @@ fontconfig.cmi: fontconfig.mli
 fontconfig.mli: fontconfig.ml
 	$(OCAMLC) -i $< > $@
 types.c fontconfig.ml: extract_consts.ml
-	$(OCAML) str.cma extract_consts.ml
+	$(OCAML) str.cma unix.cma extract_consts.ml
 fontconfig.ml: fontconfig.ml.in
 
 fontconfig.cmx: fontconfig.ml fontconfig.cmi
