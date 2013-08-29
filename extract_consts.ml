@@ -15,15 +15,19 @@ let show_me consts qui out_c out_ml =
 let read_fontconfig_h () =
 
   let dirs=
+    let _ = Unix.putenv "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS" "yes" in
     let cmd="pkg-config --cflags-only-I fontconfig" in
     try
       let p = Unix.open_process_in cmd in
       let res = input_line p in
 
+      let ireg = regexp "-I\\([^ ]+\\)" in
       let rec split i sp=
-        if i>=String.length res then List.rev sp else
-          let j=try String.index_from res i ' ' with _->String.length res in
-          split (j+1) (String.sub res (i+2) (j-i-2) :: sp)
+        try
+          let _ = search_forward ireg res i in
+          split (match_end ()) ((matched_group 1 res) :: sp)
+        with
+          Not_found -> List.rev sp
       in
 
       if Unix.close_process_in p = Unix.WEXITED(0) then split 0 []
