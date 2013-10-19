@@ -1,3 +1,9 @@
+ocaml-fontconfig (0~20130716) unstable; urgency=low
+
+  * Naive binding for FcConfigAppFontAddDir.
+
+ -- Florian Hatat <florian.hatat@univ-savoie.fr>  Sat, 19 Oct 2013 12:51:40 +0200
+
 ocaml-fontconfig (0~20130715) unstable; urgency=low
 
   * Always build bytecode, even if native is available

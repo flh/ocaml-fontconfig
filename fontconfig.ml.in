@@ -95,7 +95,11 @@ module Properties = struct
 
   let make l = Pattern.from_list (List.map to_value l)
 end
-  
+
+module Config = struct
+  external app_font_add_dir : string -> bool = "app_font_add_dir"
+end
+
 (* Initialization *)
 
 external init : unit -> bool = "init"
