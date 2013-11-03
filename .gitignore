@@ -10,6 +10,7 @@ fontconfig.ml
 fontconfig.mli
 types.c
 META
+META.byte
 debian/files
 debian/tmp
 debian/libfontconfig-ocaml*

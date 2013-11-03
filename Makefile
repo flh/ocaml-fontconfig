@@ -50,6 +50,8 @@ fontconfig.cmx: fontconfig.ml fontconfig.cmi
 fontconfig.cmo: fontconfig.ml fontconfig.cmi
 	$(OCAMLC) -c $<
 
+META.byte: META.opt
+	grep -v native < $< > $@
 META: $(META_SOURCE)
 	cp $< $@
 

@@ -1,5 +1,5 @@
 name="fontconfig"
-version="0.1"
+version="0~20131103"
 description="OCaml bindings for Fontconfig"
 archive(native)="camlfontconfig.cmxa"
 archive(byte)="camlfontconfig.cma"
