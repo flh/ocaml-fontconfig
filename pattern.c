@@ -104,6 +104,9 @@ value caml_from_fcvalue(FcValue v)
       break;
     case FcTypeMatrix:
       res = caml_from_fcmatrix(v.u.m);
+    default:
+      /* caml_invalid_argument ? */
+      break;
   }
   CAMLreturn(res);
 }
